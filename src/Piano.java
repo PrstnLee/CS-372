@@ -1,3 +1,4 @@
+// Week 1 Lab
 public class Piano extends Instrument {
     public Piano() {
         super("Piano");

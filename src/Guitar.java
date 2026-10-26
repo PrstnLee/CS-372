@@ -1,3 +1,4 @@
+// Week 1 Lab
 public class Guitar extends Instrument {
     public Guitar () {
         super("Guitar");
