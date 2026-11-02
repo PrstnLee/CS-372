@@ -1,3 +1,5 @@
+package Week_1;
+
 // Week 1 Lab
 public abstract class Instrument implements Playable {
     private String name;
@@ -6,7 +8,7 @@ public abstract class Instrument implements Playable {
         this.name = name;
     }
 
-    public String GetName() {
+    public String getName() {
         return this.name;
     }
 }
