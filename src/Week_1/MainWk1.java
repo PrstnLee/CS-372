@@ -1,12 +1,8 @@
-import Week_1.Drums;
-import Week_1.Guitar;
-import Week_1.Instrument;
-import Week_1.Piano;
+import Week_1.*;
 
 void main(String[] args) {
     // GitHub Link: https://github.com/PrstnLee/CS-372
 
-    // Week 1 Lab
     Instrument[] instruments = new Instrument[3];
 
     Piano piano = new Piano();
@@ -25,11 +21,4 @@ void main(String[] args) {
     for (Instrument instrument : instruments) {
         System.out.println(instrument.getName());
     }
-    /* -------------------------------------------------- */
-
-
-
-    // Week 2 Lab
-
-    /* -------------------------------------------------- */
 }
