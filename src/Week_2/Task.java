@@ -1,19 +1,38 @@
 package Week_2;
 
 public class Task {
-    String name;
-    String description;
-    boolean completed;
-    boolean priority;
 
-    public Task(String name, String description, boolean priority) {
+    private String name;
+    private boolean priority;
+    private boolean completed;
+
+    public Task(String name, boolean priority) {
         this.name = name;
-        this.description = description;
-        completed = false;
         this.priority = priority;
+        this.completed = false;
     }
 
-    public void completeTask() {
-        completed = true;
+    public String getName() {
+        return name;
+    }
+
+    public boolean getPriority() {
+        return priority;
+    }
+
+    public boolean isCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
+    }
+
+    @Override
+    public String toString() {
+        String status = completed ? "[DONE]" : "[ACTIVE]";
+
+        return status + " " + name +
+                " | Priority: " + priority;
     }
 }
