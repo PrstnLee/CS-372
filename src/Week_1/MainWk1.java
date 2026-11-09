@@ -1,6 +1,6 @@
 import Week_1.*;
 
-void main(String[] args) {
+public static void main(String[] args) {
     // GitHub Link: https://github.com/PrstnLee/CS-372
 
     Instrument[] instruments = new Instrument[3];

@@ -3,7 +3,9 @@ package Week_2;
 import Week_2.*;
 
 public class MainWk2 {
-    static void main(String[] args) {
+    public static void main(String[] args) {
+        // GitHub Link: https://github.com/PrstnLee/CS-372
+
         TaskManager taskManager = new TaskManager();
 
         Task task1 = new Task("Homework", "Do homework", true);
