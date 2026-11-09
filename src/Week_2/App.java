@@ -1,4 +1,3 @@
-
 package Week_2;
 
 import javafx.application.Application;
@@ -8,6 +7,8 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.geometry.Insets;
 import javafx.stage.Stage;
+
+// GitHub Link: https://github.com/PrstnLee/CS-372
 
 public class App extends Application {
 
