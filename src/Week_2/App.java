@@ -1,3 +1,4 @@
+
 package Week_2;
 
 import javafx.application.Application;
@@ -7,8 +8,6 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.geometry.Insets;
 import javafx.stage.Stage;
-
-// GitHub Link: https://github.com/PrstnLee/CS-372
 
 public class App extends Application {
 
@@ -21,6 +20,7 @@ public class App extends Application {
     private ComboBox<String> filterBox;
     private ListView<Task> taskList;
 
+    // Filtered view of tasks
     private FilteredList<Task> filteredTasks;
 
     @Override
@@ -28,6 +28,7 @@ public class App extends Application {
 
         taskManager = new TaskManager();
 
+        // Create interface controls
         taskInput = new TextField();
         taskInput.setPromptText("Enter a new task...");
 
@@ -39,12 +40,22 @@ public class App extends Application {
         );
         filterBox.setValue("All Tasks");
 
+        taskList = new ListView<>();
+
+        // Connect ListView to the task collection
+        filteredTasks = new FilteredList<>(
+                taskManager.getTasks(),
+                task -> true
+        );
+
+        taskList.setItems(filteredTasks);
+
         // Create buttons
         Button addButton = new Button("Add Task");
         Button completeButton = new Button("Mark Complete / Active");
         Button removeButton = new Button("Remove Task");
 
-        // Add section
+        // Add task input section
         Label title = new Label("My Task Manager");
         title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
 
@@ -57,7 +68,21 @@ public class App extends Application {
                 addButton
         );
 
+        // Filter section
+        Label filterLabel = new Label("Filter Tasks:");
 
+        HBox filterRow = new HBox(10);
+        filterRow.getChildren().addAll(
+                filterLabel,
+                filterBox
+        );
+
+        // Action buttons
+        HBox buttonRow = new HBox(10);
+        buttonRow.getChildren().addAll(
+                completeButton,
+                removeButton
+        );
 
         // Main layout
         VBox layout = new VBox(15);
@@ -67,7 +92,29 @@ public class App extends Application {
         layout.getChildren().addAll(
                 title,
                 inputLabel,
-                inputRow
+                inputRow,
+                filterRow,
+                taskList,
+                buttonRow
+        );
+
+        // Button event handlers
+        addButton.setOnAction(event -> addTask());
+
+        completeButton.setOnAction(
+                event -> markTaskCompleted()
+        );
+
+        removeButton.setOnAction(
+                event -> removeTask()
+        );
+
+        filterBox.setOnAction(
+                event -> filterTasks()
+        );
+
+        taskInput.setOnAction(
+                event -> addTask()
         );
 
         // Window settings
@@ -76,6 +123,60 @@ public class App extends Application {
         stage.setTitle("Mini Task Manager");
         stage.setScene(scene);
         stage.show();
+    }
+
+    // Add task
+    private void addTask() {
+
+        String name = taskInput.getText().trim();
+
+        // Get value from checkbox
+        boolean priority = priorityCheckBox.isSelected();
+
+        if (name.isEmpty()) {
+            showMessage("Please enter a task name.");
+            return;
+        }
+
+        taskManager.addTask(name, priority);
+
+        taskInput.clear();
+        priorityCheckBox.setSelected(false);
+
+        filterBox.setValue("All Tasks");
+        filterTasks();
+    }
+
+    // Mark task completed
+    private void markTaskCompleted() {
+
+        Task selectedTask = taskList.getSelectionModel()
+                .getSelectedItem();
+
+        if (selectedTask == null) {
+            showMessage("Please select a task first.");
+            return;
+        }
+
+        taskManager.toggleCompleted(selectedTask);
+
+        taskList.refresh();
+
+        filterTasks();
+    }
+
+    // Remove task
+    private void removeTask() {
+
+        Task selectedTask = taskList.getSelectionModel()
+                .getSelectedItem();
+
+        if (selectedTask == null) {
+            showMessage("Please select a task to remove.");
+            return;
+        }
+
+        taskManager.removeTask(selectedTask);
     }
 
     // Filter completed tasks
@@ -101,6 +202,7 @@ public class App extends Application {
         });
     }
 
+    // Display message to user
     private void showMessage(String message) {
 
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
