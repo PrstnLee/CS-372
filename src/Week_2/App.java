@@ -8,6 +8,8 @@ import javafx.scene.layout.*;
 import javafx.geometry.Insets;
 import javafx.stage.Stage;
 
+// GitHub Link: https://github.com/PrstnLee/CS-372
+
 public class App extends Application {
 
     // Data manager
@@ -31,25 +33,37 @@ public class App extends Application {
 
         priorityCheckBox = new CheckBox("High Priority");
 
-        filterBox = new ComboBox<>();
-        filterBox.getItems().addAll(
-                "All Tasks", "Active", "Completed"
+
+        // Create buttons
+        Button addButton = new Button("Add Task");
+        Button completeButton = new Button("Mark Complete / Active");
+        Button removeButton = new Button("Remove Task");
+
+        // Add section
+        Label title = new Label("My Task Manager");
+        title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
+
+        Label inputLabel = new Label("New Task:");
+
+        HBox inputRow = new HBox(10);
+        inputRow.getChildren().addAll(
+                taskInput,
+                priorityCheckBox,
+                addButton
         );
-        filterBox.setValue("All Tasks");
 
-        taskList = new ListView<>();
 
-        filteredTasks = new FilteredList<>(
-                taskManager.getTasks(),
-                task -> true
-        );
-
-        taskList.setItems(filteredTasks);
 
         // Main layout
         VBox layout = new VBox(15);
 
         layout.setPadding(new Insets(20));
+
+        layout.getChildren().addAll(
+                title,
+                inputLabel,
+                inputRow
+        );
 
         // Window settings
         Scene scene = new Scene(layout, 650, 450);
