@@ -1,72 +1,32 @@
 package Week_2;
 
-import java.util.ArrayList;
-import java.util.List;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 public class TaskManager {
-    List<Task> tasks = new ArrayList<Task>();
+
+    private ObservableList<Task> tasks;
 
     public TaskManager() {
-        
+        tasks = FXCollections.observableArrayList();
     }
 
-    public void addTask(Task task) {
+    // Add new task
+    public void addTask(String name, boolean priority) {
+        Task task = new Task(name, priority);
         tasks.add(task);
     }
 
+    // Remove task
     public void removeTask(Task task) {
         tasks.remove(task);
     }
 
-    public void displayTasks() {
-        System.out.println("All tasks:");
-
-        for (Task task : tasks) {
-            System.out.println(task.name + " (" + task.description + ")");
-        }
+    public void toggleCompleted(Task task) {
+        task.setCompleted(!task.isCompleted());
     }
 
-    public void filterPriority() {
-        System.out.println("High Priority Tasks:");
-
-        for (Task task : tasks) {
-            if (task.priority) {
-                System.out.println(task.name + " (" + task.description + ")");
-            }
-        }
-    }
-
-    public int getPriorityNumber() {
-        int count = 0;
-
-        for (Task task : tasks) {
-            if (task.priority) {
-                count++;
-            }
-        }
-
-        return count;
-    }
-
-    public void filterCompleted() {
-        System.out.println("Completed Tasks:");
-
-        for (Task task : tasks) {
-            if (task.completed) {
-                System.out.println(task.name + " (" + task.description + ")");
-            }
-        }
-    }
-
-    public int getCompletedNumber() {
-        int count = 0;
-
-        for (Task task : tasks) {
-            if (task.completed) {
-                count++;
-            }
-        }
-
-        return count;
+    public ObservableList<Task> getTasks() {
+        return tasks;
     }
 }
