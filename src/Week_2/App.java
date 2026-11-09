@@ -33,6 +33,11 @@ public class App extends Application {
 
         priorityCheckBox = new CheckBox("High Priority");
 
+        filterBox = new ComboBox<>();
+        filterBox.getItems().addAll(
+                "All Tasks", "Active", "Completed"
+        );
+        filterBox.setValue("All Tasks");
 
         // Create buttons
         Button addButton = new Button("Add Task");
@@ -71,6 +76,40 @@ public class App extends Application {
         stage.setTitle("Mini Task Manager");
         stage.setScene(scene);
         stage.show();
+    }
+
+    // Filter completed tasks
+    private void filterTasks() {
+
+        String filter = filterBox.getValue();
+
+        filteredTasks.setPredicate(task -> {
+
+            if (filter == null || filter.equals("All Tasks")) {
+                return true;
+            }
+
+            if (filter.equals("Active")) {
+                return !task.isCompleted();
+            }
+
+            if (filter.equals("Completed")) {
+                return task.isCompleted();
+            }
+
+            return true;
+        });
+    }
+
+    private void showMessage(String message) {
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+
+        alert.setTitle("Task Manager");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+
+        alert.showAndWait();
     }
 
     public static void main(String[] args) {
