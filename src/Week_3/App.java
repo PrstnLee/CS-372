@@ -1,5 +1,7 @@
-package Week_2;
+package Week_3;
 
+import Week_2.Task;
+import Week_2.TaskManager;
 import javafx.application.Application;
 import javafx.collections.transformation.FilteredList;
 import javafx.scene.Scene;
@@ -7,6 +9,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.geometry.Insets;
 import javafx.stage.Stage;
+import java.io.*;
 
 // GitHub Link: https://github.com/PrstnLee/CS-372
 
@@ -56,6 +59,10 @@ public class App extends Application {
         Button completeButton = new Button("Mark Complete / Active");
         Button removeButton = new Button("Remove Task");
 
+        // Save & Load buttons
+        Button saveButton = new Button("Save");
+        Button loadButton = new Button("Load");
+
         // Add task input section
         Label title = new Label("My Task Manager");
         title.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
@@ -82,7 +89,9 @@ public class App extends Application {
         HBox buttonRow = new HBox(10);
         buttonRow.getChildren().addAll(
                 completeButton,
-                removeButton
+                removeButton,
+                saveButton,
+                loadButton
         );
 
         // Main layout
