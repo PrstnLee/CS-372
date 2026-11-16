@@ -27,6 +27,9 @@ public class App extends Application {
     // Filtered view of tasks
     private FilteredList<Task> filteredTasks;
 
+    // CSV file
+    private final File taskFile = new File("tasks.csv");
+
     @Override
     public void start(Stage stage) {
 
@@ -46,7 +49,7 @@ public class App extends Application {
 
         taskList = new ListView<>();
 
-        // Connect ListView to the task collection
+        // Connect ListView to task collection
         filteredTasks = new FilteredList<>(
                 taskManager.getTasks(),
                 task -> true
@@ -58,10 +61,8 @@ public class App extends Application {
         Button addButton = new Button("Add Task");
         Button completeButton = new Button("Mark Complete / Active");
         Button removeButton = new Button("Remove Task");
-
-        // Save & Load buttons
-        Button saveButton = new Button("Save");
-        Button loadButton = new Button("Load");
+        Button saveButton = new Button("Save Tasks");
+        Button loadButton = new Button("Load Tasks");
 
         // Add task input section
         Label title = new Label("My Task Manager");
@@ -96,7 +97,6 @@ public class App extends Application {
 
         // Main layout
         VBox layout = new VBox(15);
-
         layout.setPadding(new Insets(20));
 
         layout.getChildren().addAll(
@@ -119,6 +119,14 @@ public class App extends Application {
                 event -> removeTask()
         );
 
+        saveButton.setOnAction(
+                event -> saveTasks()
+        );
+
+        loadButton.setOnAction(
+                event -> loadTasks()
+        );
+
         filterBox.setOnAction(
                 event -> filterTasks()
         );
@@ -128,7 +136,7 @@ public class App extends Application {
         );
 
         // Window settings
-        Scene scene = new Scene(layout, 650, 450);
+        Scene scene = new Scene(layout, 800, 450);
 
         stage.setTitle("Mini Task Manager");
         stage.setScene(scene);
@@ -140,7 +148,6 @@ public class App extends Application {
 
         String name = taskInput.getText().trim();
 
-        // Get value from checkbox
         boolean priority = priorityCheckBox.isSelected();
 
         if (name.isEmpty()) {
@@ -171,7 +178,6 @@ public class App extends Application {
         taskManager.toggleCompleted(selectedTask);
 
         taskList.refresh();
-
         filterTasks();
     }
 
@@ -187,6 +193,181 @@ public class App extends Application {
         }
 
         taskManager.removeTask(selectedTask);
+    }
+
+    // Save tasks to CSV file
+    private void saveTasks() {
+
+        try (PrintWriter writer =
+                     new PrintWriter(new FileWriter(taskFile))) {
+
+            // Write CSV header
+            writer.println("Name,Priority,Completed");
+
+            // Write each task
+            for (Task task : taskManager.getTasks()) {
+
+                // Escape quotes in task names
+                String escapedName = task.getName()
+                        .replace("\"", "\"\"");
+
+                writer.println(
+                        "\"" + escapedName + "\"," +
+                                task.getPriority() + "," +
+                                task.isCompleted()
+                );
+            }
+
+            showMessage("Tasks saved successfully!");
+
+        } catch (IOException e) {
+
+            showMessage(
+                    "Error saving tasks: " + e.getMessage()
+            );
+        }
+    }
+
+    // Load tasks from CSV file
+    private void loadTasks() {
+
+        if (!taskFile.exists()) {
+            showMessage("No saved tasks file found.");
+            return;
+        }
+
+        // Temporary list prevents partial updates
+        java.util.List<Task> loadedTasks =
+                new java.util.ArrayList<>();
+
+        try (BufferedReader reader =
+                     new BufferedReader(new FileReader(taskFile))) {
+
+            String header = reader.readLine();
+
+            if (!"Name,Priority,Completed".equals(header)) {
+                throw new IOException("Invalid CSV header.");
+            }
+
+            String line;
+            int lineNumber = 1;
+
+            while ((line = reader.readLine()) != null) {
+
+                lineNumber++;
+
+                String[] data = parseCsvLine(line);
+
+                if (data.length != 3) {
+                    throw new IOException(
+                            "Invalid data on line " + lineNumber
+                    );
+                }
+
+                String name = data[0].trim();
+
+                String priorityText = data[1].trim();
+                String completedText = data[2].trim();
+
+                if (name.isEmpty()) {
+                    throw new IOException(
+                            "Task name is empty on line " + lineNumber
+                    );
+                }
+
+                if (!priorityText.equalsIgnoreCase("true") &&
+                        !priorityText.equalsIgnoreCase("false")) {
+
+                    throw new IOException(
+                            "Invalid priority on line " + lineNumber
+                    );
+                }
+
+                if (!completedText.equalsIgnoreCase("true") &&
+                        !completedText.equalsIgnoreCase("false")) {
+
+                    throw new IOException(
+                            "Invalid completion status on line " + lineNumber
+                    );
+                }
+
+                boolean priority =
+                        Boolean.parseBoolean(priorityText);
+
+                boolean completed =
+                        Boolean.parseBoolean(completedText);
+
+                // Create task
+                Task task = new Task(name, priority);
+
+                task.setCompleted(completed);
+
+                loadedTasks.add(task);
+            }
+
+            // Replace existing tasks only after successful loading
+            taskManager.getTasks().setAll(loadedTasks);
+
+            // Refresh displayed list
+            filterBox.setValue("All Tasks");
+            filterTasks();
+            taskList.refresh();
+
+            showMessage("Tasks loaded successfully!");
+
+        } catch (IOException e) {
+
+            showMessage(
+                    "Error loading tasks: " + e.getMessage()
+            );
+        }
+    }
+
+    // Parse a CSV line, including quoted task names
+    private String[] parseCsvLine(String line)
+            throws IOException {
+
+        java.util.List<String> values =
+                new java.util.ArrayList<>();
+
+        StringBuilder value = new StringBuilder();
+
+        boolean insideQuotes = false;
+
+        for (int i = 0; i < line.length(); i++) {
+
+            char current = line.charAt(i);
+
+            if (current == '"') {
+
+                if (insideQuotes &&
+                        i + 1 < line.length() &&
+                        line.charAt(i + 1) == '"') {
+
+                    value.append('"');
+                    i++;
+
+                } else {
+                    insideQuotes = !insideQuotes;
+                }
+
+            } else if (current == ',' && !insideQuotes) {
+
+                values.add(value.toString());
+                value.setLength(0);
+
+            } else {
+                value.append(current);
+            }
+        }
+
+        if (insideQuotes) {
+            throw new IOException("Unclosed quotation mark.");
+        }
+
+        values.add(value.toString());
+
+        return values.toArray(new String[0]);
     }
 
     // Filter completed tasks
