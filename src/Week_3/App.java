@@ -1,7 +1,7 @@
 package Week_3;
 
-import Week_2.Task;
-import Week_2.TaskManager;
+import Week_5.Models.Task;
+import Week_5.Managers.TaskManager;
 import javafx.application.Application;
 import javafx.collections.transformation.FilteredList;
 import javafx.scene.Scene;
